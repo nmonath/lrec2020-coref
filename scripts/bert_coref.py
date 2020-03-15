@@ -16,6 +16,9 @@ import numpy as np
 import random
 import calc_coref_metrics
 
+from absl import logging
+import subprocess
+
 from torch.optim.lr_scheduler import ExponentialLR
 
 random.seed(1)
@@ -28,6 +31,15 @@ bert_dim=768
 HIDDEN_DIM=200
 
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+
+logging.set_verbosity(logging.INFO)
+
+logging.info('Using torch version %s', torch.__version__)
+logging.info('torch.cuda.is_available() %s', torch.cuda.is_available())
+logging.info('nvcc --version %s', subprocess.check_output('nvcc --version', shell=True))
+logging.info('CUDA_VISIBLE_DEVICES %s', subprocess.check_output('echo $CUDA_VISIBLE_DEVICES', shell=True))
+logging.info('torch.device %s', device)
+
 
 class LSTMTagger(BertPreTrainedModel):
 
@@ -432,11 +444,11 @@ def test(model, test_all_docs, test_all_ents, test_all_named_ents, test_all_max_
 	out.close()
 
 	if doTest:
-		print("Goldfile: %s" % goldFile)
-		print("Predfile: %s" % outfile)
+		logging.info("Goldfile: %s" % goldFile)
+		logging.info("Predfile: %s" % outfile)
 		
 		bcub_f, avg=calc_coref_metrics.get_conll(path_to_scorer, gold=goldFile, preds=outfile)
-		print("Iter %s, Average F1: %.3f, bcub F1: %s" % (iterr, avg, bcub_f))
+		logging.info("Iter %s, Average F1: %.3f, bcub F1: %s" % (iterr, avg, bcub_f))
 		sys.stdout.flush()
 		return avg
 
@@ -764,7 +776,7 @@ def read_conll(filename, model=None):
 					docid=matcher.group(1)
 					partID=matcher.group(2)
 
-				print(docid)
+				logging.info(docid)
 
 			elif line.startswith("#end document"):
 
@@ -927,7 +939,7 @@ if __name__ == "__main__":
 			for idx in range(len(all_docs)):
 
 				if idx % 10 == 0:
-					print(idx, "/", len(all_docs))
+					logging.info(idx, "/", len(all_docs))
 					sys.stdout.flush()
 				max_words=all_max_words[idx]
 				max_ents=all_max_ents[idx]
@@ -944,7 +956,7 @@ if __name__ == "__main__":
 						lr_scheduler.step()
 				bigloss+=loss.item()
 
-			print(bigloss)
+			logging.info(bigloss)
 
 			model.eval()
 			doTest=False
@@ -956,7 +968,7 @@ if __name__ == "__main__":
 			if doTest:
 				if avg_f1 > best_f1:
 					torch.save(model.state_dict(), modelFile)
-					print("Saving model ... %.3f is better than %.3f" % (avg_f1, best_f1))
+					logging.info("Saving model ... %.3f is better than %.3f" % (avg_f1, best_f1))
 					best_f1=avg_f1
 					best_idx=i
 
