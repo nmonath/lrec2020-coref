@@ -5,7 +5,7 @@ Code and data to support Bamman, Lewke and Mansoor (2020), "A Dataset of Literar
 ### Setup
 
 ```sh
-pip3 install -r requirements.txt
+pip install -r requirements.txt
 ```
 
 ### Create 10-fold cross-validation data
