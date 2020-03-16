@@ -37,7 +37,10 @@ chmod 755 scripts/crossval-predict.sh
 ### Train 10 models (each on their own training partition)
 
 ```sh
-./scripts/crossval-train.sh
+for i in {0..9}
+do
+sh bin/launch_cross_val_train.sh $i
+done
 ```
 
 ### Use each trained model to make predictions for its own held-out test data.

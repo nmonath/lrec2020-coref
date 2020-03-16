@@ -34,11 +34,6 @@ device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
 logging.set_verbosity(logging.INFO)
 
-logging.info('Using torch version %s', torch.__version__)
-logging.info('torch.cuda.is_available() %s', torch.cuda.is_available())
-logging.info('nvcc --version %s', subprocess.check_output('nvcc --version', shell=True))
-logging.info('CUDA_VISIBLE_DEVICES %s', subprocess.check_output('echo $CUDA_VISIBLE_DEVICES', shell=True))
-logging.info('torch.device %s', device)
 
 
 class LSTMTagger(BertPreTrainedModel):
@@ -897,6 +892,13 @@ if __name__ == "__main__":
 	parser.add_argument('-s','--path_to_scorer', help='Path to coreference scorer', required=False)
 
 	args = vars(parser.parse_args())
+
+	logging.info('Starting bert_coref.py')
+	logging.info('Using torch version %s', torch.__version__)
+	logging.info('torch.cuda.is_available() %s', torch.cuda.is_available())
+	logging.info('nvcc --version %s', subprocess.check_output('nvcc --version', shell=True))
+	logging.info('CUDA_VISIBLE_DEVICES %s', subprocess.check_output('echo $CUDA_VISIBLE_DEVICES', shell=True))
+	logging.info('torch.device %s', device)
 
 	mode=args["mode"]
 	modelFile=args["model"]
